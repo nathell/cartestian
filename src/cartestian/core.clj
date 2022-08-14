@@ -34,17 +34,17 @@
     [dimensions]
   clojure.lang.Counted
   (count [_]
-    (apply * (map count dimensions)))
+    (apply * (map (comp count :dimension) dimensions)))
   clojure.lang.Indexed
   (nth [_ i]
     (->
      (reduce
-      (fn [[n v] dim]
-        (let [cnt (count dim)
+      (fn [[n v] {:keys [name dimension]}]
+        (let [cnt (count dimension)
               k (mod n cnt)
               n' (quot n cnt)]
-          [n' (conj! v (nth dim k))]))
-      [i (transient [])]
+          [n' (assoc! v name (nth dimension k))]))
+      [i (transient {})]
       dimensions)
      second
      persistent!))
@@ -52,8 +52,12 @@
   (seq [this]
     (CartesianProductSeq. this 0)))
 
-(defn cartesian-product [& seqs]
+(defn- map->dimension-list [m]
+  (mapv (fn [[k v]]
+          {:name k, :dimension v})
+        m))
+
+(defn cartesian-product [dimensions]
   (CartesianProduct.
-   (into []
-         (map vec)
-         seqs)))
+   (cond-> dimensions
+     (map? dimensions) map->dimension-list)))
