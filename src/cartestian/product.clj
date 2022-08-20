@@ -1,4 +1,4 @@
-(ns cartestian.core)
+(ns cartestian.product)
 
 (deftype CartesianProductSeq
     [product i]
@@ -51,13 +51,3 @@
   clojure.lang.Seqable
   (seq [this]
     (CartesianProductSeq. this 0)))
-
-(defn- map->dimension-list [m]
-  (mapv (fn [[k v]]
-          {:name k, :dimension v})
-        m))
-
-(defn cartesian-product [dimensions]
-  (CartesianProduct.
-   (cond-> dimensions
-     (map? dimensions) map->dimension-list)))

@@ -1,6 +1,4 @@
-(ns cartestian.test
-  (:require [cartestian.core :as core]
-            [clojure.test :as t]))
+(ns cartestian.test)
 
 ;; ideas for config:
 ;; :count – upper limit of executed tests, can be :all or a number, defaults to 100 (?)
@@ -10,13 +8,10 @@
 
 (defmacro with-combinations
   [[sym dimensions & [config]] & body]
-  `(let [cp# (core/cartesian-product ~dimensions)]
+  `(let [cp# (cartestian.core/cartesian-product ~dimensions)]
      (doseq [~sym cp#]
-       (t/testing (pr-str ~sym)
-         ~@body))))
-
-(comment
-  (t/deftest example
-    (with-combinations [variant {:this [:success :failure]
-                                 :that [:success :failure]}]
-      (t/is (= (:this variant) (:that variant))))))
+       (~(if (:ns &env) ; yuck https://groups.google.com/g/clojurescript/c/iBY5HaQda4A/m/w1lAQi9_AwsJ
+           `cljs.test/testing
+           `clojure.test/testing)
+        (pr-str ~sym)
+        ~@body))))
