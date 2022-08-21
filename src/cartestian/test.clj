@@ -8,7 +8,7 @@
 
 (defmacro with-combinations
   [[sym dimensions & [config]] & body]
-  `(let [cp# (cartestian.core/cartesian-product ~dimensions)]
+  `(let [cp# (cartestian.core/combinations ~dimensions ~config)]
      (doseq [~sym cp#]
        (~(if (:ns &env) ; yuck https://groups.google.com/g/clojurescript/c/iBY5HaQda4A/m/w1lAQi9_AwsJ
            `cljs.test/testing
